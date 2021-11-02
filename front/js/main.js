@@ -7,6 +7,8 @@
   }
 })();
 
+/* ------------------------------------------------------------------------------FUNCTIONS ----------------------------------------------------------------------------------*/
+
 // Récupération des produits de l'API avec la methode fetch GET
 function appearanceArticles() {
   return fetch("http://localhost:3000/api/products")
@@ -17,7 +19,7 @@ function appearanceArticles() {
       return articles;
     })
     .catch(function (erreur) {
-      alert("Il y a une erreur de chargement. Merci de vous assurer que le port 3000 est bien activé.");
+      alert("Il y a une erreur de chargement. Merci de vous assurer que le port 3000 est bien activé puis d'actualiser la page");
     });
 }
 
@@ -28,6 +30,7 @@ function displayArticles(article) {
 
   duplicateArticles.querySelector(".productId").setAttribute("href", "product.html" + "?" + "id=" + article._id);
   duplicateArticles.querySelector(".productImage").setAttribute("src", article.imageUrl);
+  duplicateArticles.querySelector(".productImage").setAttribute("alt", article.altTxt);
   duplicateArticles.querySelector(".productName").textContent = article.name;
   duplicateArticles.querySelector(".productDescription").textContent = article.description;
 
