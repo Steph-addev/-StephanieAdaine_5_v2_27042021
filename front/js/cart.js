@@ -43,8 +43,13 @@ if (products === null || products == 0) {
 
   //Toutes les fonctions sont expliquées ci-après
   getArticles(additionArticle);
-  globalDelete();
-  adjustQuantity();
+
+  deleteItems();
+  deleteAllItems();
+
+  plusQuantité();
+  minusQuantité();
+
   totalCart();
   totalArticles();
 
@@ -75,96 +80,85 @@ function getArticles(additionArticle) {
   }
 }
 
-// Fonction regroupant les fonctions pour gérer les suppressions de produit dans le panier
-function globalDelete() {
-  // Fonction pour supprimer un article du panier quand on clique sur "supprimer", mise à jour du LocalStorage et disparition de l'article dans le HTML
-  function deleteItems() {
-    const trash = document.querySelectorAll(".deleteItem");
-    trash.forEach((btn, i) =>
-      btn.addEventListener("click", (event) => {
-        deleteItemSelected(i);
-        alert("Cet article sera supprimé de votre panier");
-        window.location.href = "cart.html";
-      })
-    );
-    function deleteItemSelected(index) {
-      products.splice(index, 1);
-      localStorage.setItem("products", JSON.stringify(products));
-    }
+// Fonction pour supprimer un article du panier quand on clique sur "supprimer", mise à jour du LocalStorage et disparition de l'article dans le HTML
+function deleteItems() {
+  const trash = document.querySelectorAll(".deleteItem");
+  trash.forEach((btn, i) =>
+    btn.addEventListener("click", (event) => {
+      deleteItemSelected(i);
+      alert("Cet article sera supprimé de votre panier");
+      window.location.href = "cart.html";
+    })
+  );
+  function deleteItemSelected(index) {
+    products.splice(index, 1);
+    localStorage.setItem("products", JSON.stringify(products));
   }
-  deleteItems();
+}
 
-  // Fonction pour supprimer tous les articles du panier quand on clique sur "vider le panier", mise à jour du LocalStorage et disparition de l'article dans le HTML
-  function deleteAllItems() {
-    const trashAll = document.querySelector(".cart__itemsDelete");
-    trashAll.addEventListener("click", (action) => {
+// Fonction pour supprimer tous les articles du panier quand on clique sur "vider le panier", mise à jour du LocalStorage et disparition de l'article dans le HTML
+function deleteAllItems() {
+  const trashAll = document.querySelector(".cart__itemsDelete");
+  trashAll.addEventListener("click", (action) => {
+    event.preventDefault();
+    localStorage.removeItem("products", JSON.stringify(products));
+    alert("Votre panier sera vidé");
+    window.location.href = "cart.html";
+  });
+}
+
+// Fonction pour supprimer tous les articles du panier quand on clique sur "vider le panier", mise à jour du LocalStorage et disparition de l'article dans le HTML
+function deleteItemsMinus() {
+  const minusTrash = document.querySelectorAll(".cart__item__content__settings__quantity__icons__minus");
+  for (r = 0; r < minusTrash.length; r++) {
+    let suppressionById = products[r]._id;
+    minusTrash[r].addEventListener("click", (event) => {
       event.preventDefault();
-      localStorage.removeItem("products", JSON.stringify(products));
-      alert("Votre panier sera vidé");
+      products = products.filter((products) => products._id !== suppressionById);
+      localStorage.setItem("products", JSON.stringify(products));
+      alert("Cet article sera supprimé de votre panier");
       window.location.href = "cart.html";
     });
   }
-  deleteAllItems();
-
-  // Fonction pour supprimer tous les articles du panier quand on clique sur "vider le panier", mise à jour du LocalStorage et disparition de l'article dans le HTML
-  function deleteItemsMinus() {
-    const minusTrash = document.querySelectorAll(".cart__item__content__settings__quantity__icons__minus");
-    for (r = 0; r < minusTrash.length; r++) {
-      let suppressionById = products[r]._id;
-      minusTrash[r].addEventListener("click", (event) => {
-        event.preventDefault();
-        products = products.filter((products) => products._id !== suppressionById);
-        localStorage.setItem("products", JSON.stringify(products));
-        alert("Cet article sera supprimé de votre panier");
-        window.location.href = "cart.html";
-      });
-    }
-  }
-  deleteItemsMinus();
 }
 
-// Fonction regroupant les fonctions pour gérer les quantités des articles dans le panier
-function adjustQuantity() {
-  // Fonction pour augmenter la quantité d'un article
-  function plusQuantité() {
-    const plus = document.querySelectorAll(".cart__item__content__settings__quantity__icons__plus");
-    for (let q = 0; q < plus.length; q++) {
-      let updateQuantité = parseInt(products[q].quantity);
-      let updatePrice = parseInt(products[q].unitPrice);
-      updateProducts = products;
-      plus[q].addEventListener("click", (event) => {
+// Fonction pour augmenter la quantité d'un article
+function plusQuantité() {
+  const plus = document.querySelectorAll(".cart__item__content__settings__quantity__icons__plus");
+  for (let q = 0; q < plus.length; q++) {
+    let updateQuantité = parseInt(products[q].quantity);
+    let updatePrice = parseInt(products[q].unitPrice);
+    updateProducts = products;
+    plus[q].addEventListener("click", (event) => {
+      event.preventDefault();
+      updateProducts[q].quantity = updateQuantité + 1;
+      updateProducts[q].price = updatePrice * updateProducts[q].quantity;
+      localStorage.setItem("products", JSON.stringify(products));
+      window.location.href = "cart.html";
+    });
+  }
+}
+
+// Fonction pour diminuer la quantité d'un article jusqu'à 1 article
+// En dessous de 1, la quantité de l'article sera égale à 0 et l'article sera supprimé du panier
+function minusQuantité() {
+  const minus = document.querySelectorAll(".cart__item__content__settings__quantity__icons__minus");
+  for (let q = 0; q < minus.length; q++) {
+    let updateQuantité = parseInt(products[q].quantity);
+    let updatePrice = parseInt(products[q].unitPrice);
+    updateProducts = products;
+    if (products[q].quantity > 1) {
+      minus[q].addEventListener("click", (event) => {
         event.preventDefault();
-        updateProducts[q].quantity = updateQuantité + 1;
+        updateProducts[q].quantity = updateQuantité - 1;
         updateProducts[q].price = updatePrice * updateProducts[q].quantity;
         localStorage.setItem("products", JSON.stringify(products));
         window.location.href = "cart.html";
       });
+    } else {
+      deleteItemsMinus();
     }
   }
-  plusQuantité();
-
-  // Fonction pour diminuer la quantité d'un article jusqu'à 1 article
-  // En dessous de 1, la quantité de l'article sera égale à 0 et l'article sera supprimé du panier
-  function minusQuantité() {
-    const minus = document.querySelectorAll(".cart__item__content__settings__quantity__icons__minus");
-    for (let q = 0; q < minus.length; q++) {
-      let updateQuantité = parseInt(products[q].quantity);
-      let updatePrice = parseInt(products[q].unitPrice);
-      updateProducts = products;
-      if (products[q].quantity > 1) {
-        minus[q].addEventListener("click", (event) => {
-          event.preventDefault();
-          updateProducts[q].quantity = updateQuantité - 1;
-          updateProducts[q].price = updatePrice * updateProducts[q].quantity;
-          localStorage.setItem("products", JSON.stringify(products));
-          window.location.href = "cart.html";
-        });
-      } else {
-        deleteItemsMinus();
-      }
-    }
-  }
-  minusQuantité();
 }
 
 // Addition du total des produits présents dans le panier
