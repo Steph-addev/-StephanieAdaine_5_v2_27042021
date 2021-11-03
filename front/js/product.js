@@ -25,7 +25,6 @@ function appearanceArticle() {
 function getProductId(articles) {
   const recupUrl = window.location.search;
   const recupId = new URLSearchParams(recupUrl);
-  console.log(articles);
   const idInUrl = recupId.get("id");
   const idSelector = articles.find((article) => article._id === idInUrl);
   displayArticle(idSelector);
@@ -53,7 +52,6 @@ function htmlInjectionDatas(idSelector) {
 // Visible ensuite grâce à la fonction displayArticle()
 function getOptionsArticle(idSelector) {
   const varnishChoice = idSelector.colors;
-  console.log(varnishChoice);
   let varnishStructure = [];
   varnishChoice.forEach((item) => {
     varnishStructure =
@@ -76,7 +74,6 @@ function addToCart(idSelector) {
     const idOptionProduit = document.querySelector("#colors");
     const idQuantityProduit = document.querySelector("#quantity");
     let choixUx = idOptionProduit.value;
-    console.log(choixUx);
     const choixQt = idQuantityProduit.value;
     let produitPanier = {
       colors: choixUx,
@@ -108,8 +105,6 @@ function addItemstoStorage(produitPanier) {
     saveInLocalStorage.push(produitPanier);
     localStorage.setItem("products", JSON.stringify(saveInLocalStorage));
     alert("Votre article a bien été ajouté au panier");
-    console.log(saveInLocalStorage);
-    console.log(produitPanier.colors + " produitPanier.colors - je suis le premier article ajouté");
   } else {
     let equals = false;
     for (let a = 0; a < saveInLocalStorage.length; a++) {

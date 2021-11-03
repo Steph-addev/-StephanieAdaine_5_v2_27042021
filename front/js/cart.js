@@ -1,5 +1,4 @@
 let products = JSON.parse(localStorage.getItem("products"));
-console.log(products);
 
 // Injection avec panier vide et injection panier remplit avec boucle pour afficher articles du localStorage
 if (products === null || products == 0) {
@@ -181,7 +180,6 @@ function totalArticles() {
     const totalQuantity = parseInt(products[q].quantity);
     totalArticlesPanier.push(totalQuantity);
     const reducer = (accumulator, currentValue) => accumulator + currentValue;
-    console.log(totalQuantity);
     numberArticles.innerHTML = totalArticlesPanier.reduce(reducer, 0);
   }
 }
@@ -314,12 +312,11 @@ function getOrderId() {
     })
       .then((response) => response.json())
       .then((order) => {
-        console.log(order);
         localStorage.setItem("orderId", order.orderId);
         window.location.href = "confirmation.html" + "?" + "name" + "=" + order.orderId;
         localStorage.clear();
       })
-      .catch((err) => console.log("Il y a un problème: ", err));
+      .catch((err) => alert("Il y a un problème: ", err));
   }
   sendToServer(envoiFormulaire);
 }
