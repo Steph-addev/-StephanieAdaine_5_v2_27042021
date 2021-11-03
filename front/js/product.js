@@ -2,14 +2,17 @@
 
 (async function (article) {
   const articles = await appearanceArticle();
-  getProductId(articles);
+  displayArticle(articles);
 })();
 
 /* ------------------------------------------------------------------------------FUNCTIONS ----------------------------------------------------------------------------------*/
 
 // Fonction de récupération de l'API par GET depuis le server, récupération des détails des articles
 function appearanceArticle() {
-  return fetch("http://localhost:3000/api/products")
+  const recupUrl = window.location.search;
+  const recupId = new URLSearchParams(recupUrl);
+  const productId = recupId.get("id");
+  return fetch("http://localhost:3000/api/products/" + productId)
     .then(function (results) {
       return results.json();
     })
@@ -21,37 +24,28 @@ function appearanceArticle() {
     });
 }
 
-// Fonction de récupération de l'Id produit pour l'affichage d'un seul produit sur la page produit.html. Utilisation de URLSearchParams.
-function getProductId(articles) {
-  const recupUrl = window.location.search;
-  const recupId = new URLSearchParams(recupUrl);
-  const idInUrl = recupId.get("id");
-  const idSelector = articles.find((article) => article._id === idInUrl);
-  displayArticle(idSelector);
-  addToCart(idSelector);
-}
-
 // Fonction pour l'affichage sur la page HTML des détails du produit-ID
-function displayArticle(idSelector) {
-  getOptionsArticle(idSelector);
-  htmlInjectionDatas(idSelector);
+function displayArticle(productId) {
+  getOptionsArticle(productId);
+  htmlInjectionDatas(productId);
+  addToCart(productId);
 }
 
 // Fonction pour l'injection des données de l'API dans la page HTML.
 // Visible ensuite grâce à la fonction displayArticle()
-function htmlInjectionDatas(idSelector) {
+function htmlInjectionDatas(productId) {
   const positionArticle = document.getElementById("article");
-  positionArticle.querySelector(".item__imgUrl").setAttribute("src", idSelector.imageUrl);
-  positionArticle.querySelector(".item__imgUrl").setAttribute("alt", idSelector.altTxt);
-  positionArticle.querySelector("#title").textContent = idSelector.name;
-  positionArticle.querySelector("#description").textContent = idSelector.description;
-  positionArticle.querySelector("#price").textContent = idSelector.price;
+  positionArticle.querySelector(".item__imgUrl").setAttribute("src", productId.imageUrl);
+  positionArticle.querySelector(".item__imgUrl").setAttribute("alt", productId.altTxt);
+  positionArticle.querySelector("#title").textContent = productId.name;
+  positionArticle.querySelector("#description").textContent = productId.description;
+  positionArticle.querySelector("#price").textContent = productId.price;
 }
 
 // Fonction pour l'injection dans le HTML des options de vernissage par boucle pour afficher les éléments sous forme de tableau selon le nombre d'options.
 // Visible ensuite grâce à la fonction displayArticle()
-function getOptionsArticle(idSelector) {
-  const varnishChoice = idSelector.colors;
+function getOptionsArticle(productId) {
+  const varnishChoice = productId.colors;
   let varnishStructure = [];
   varnishChoice.forEach((item) => {
     varnishStructure =
@@ -67,7 +61,7 @@ function getOptionsArticle(idSelector) {
 
 // Fonction : au clic sur le bouton "ajouter au panier", la fonction rassemble les éléments sélectionnés par l'utilisateur pour créer son panier.
 // Le panier est ensuite enregistré dans le localStorage
-function addToCart(idSelector) {
+function addToCart(productId) {
   const clikPanier = document.getElementById("addToCart");
   clikPanier.addEventListener("click", (shop) => {
     event.preventDefault();
@@ -77,12 +71,12 @@ function addToCart(idSelector) {
     const choixQt = idQuantityProduit.value;
     let produitPanier = {
       colors: choixUx,
-      _id: idSelector._id,
-      name: idSelector.name,
-      price: idSelector.price,
-      unitPrice: idSelector.price,
-      imageUrl: idSelector.imageUrl,
-      description: idSelector.description,
+      _id: productId._id,
+      name: productId.name,
+      price: productId.price,
+      unitPrice: productId.price,
+      imageUrl: productId.imageUrl,
+      description: productId.description,
       quantity: choixQt,
     };
     addItemstoStorage(produitPanier);
