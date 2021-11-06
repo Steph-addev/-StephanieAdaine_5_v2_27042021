@@ -57,9 +57,8 @@ if (products === null || products == 0) {
     buttonValidation.addEventListener("click", (valid) => {
       valid.preventDefault();
       validationForm();
-      emptyCart();
       //Envoi du formulaire dans le localStorage, l'order ID sera renvoyé uniquement si les données sont correctes
-      if (validationForm() == true && emptyCart() == false) {
+      if (validationForm() == true) {
         getOrderId();
       }
     });
