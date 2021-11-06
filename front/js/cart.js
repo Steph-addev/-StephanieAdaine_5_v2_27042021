@@ -2,9 +2,7 @@ let products = JSON.parse(localStorage.getItem("products"));
 
 // Injection avec panier vide et injection panier remplit avec boucle pour afficher articles du localStorage
 if (products === null || products == 0) {
-  const panierLocation = document.querySelector("#cart__items");
-  panierLocation.innerHTML = "Votre panier est vide.";
-  localStorage.removeItem("products", JSON.stringify(products));
+  emptyCart();
 } else {
   let additionArticle = [];
   for (p = 0; p < products.length; p++) {
@@ -59,9 +57,9 @@ if (products === null || products == 0) {
     buttonValidation.addEventListener("click", (valid) => {
       valid.preventDefault();
       validationForm();
-
+      emptyCart();
       //Envoi du formulaire dans le localStorage, l'order ID sera renvoyé uniquement si les données sont correctes
-      if (validationForm() == true) {
+      if (validationForm() == true && emptyCart() == false) {
         getOrderId();
       }
     });
@@ -70,6 +68,16 @@ if (products === null || products == 0) {
 }
 
 /* -----------------------------------------------FUNCTIONS ----------------------------------------------*/
+
+//
+function emptyCart() {
+  const panierLocation = document.querySelector("#cart__items");
+  window.location.hash = "cart__title";
+  panierLocation.innerHTML = "Votre panier est vide.";
+  alert("Votre panier est vide, merci de retourner sur la page d'accueil pour sélectionner vos articles!");
+  localStorage.removeItem("products", JSON.stringify(products));
+  window.location.href = "index.html";
+}
 
 //Fonction pour afficher les articles dans le HTML
 function getArticles(additionArticle) {
